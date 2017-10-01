@@ -15,23 +15,23 @@
 
 
 
-<meta name="description" content="#JVM的物理结构以及类的加载 ##前言我们经常会听到java有“一次编译，到处运行”的跨平台的优点，其功劳主要归功于“字节码”。和虚拟机(JVM)和 C/C++等传统的编译性语言不同，Java 源代码的默认编译结果并非是可执行代码（本地机器指令），而是具有平台通用性的字节码，所以通用的字节码保证了其跨平台特性，但是程序最后的运行还是要和具体的操作系统打交道的，这就JVM（java虚拟机）帮我们做">
+<meta name="description" content="JVM的物理结构以及类的加载前言我们经常会听到java有“一次编译，到处运行”的跨平台的优点，其功劳主要归功于“字节码”。和虚拟机(JVM)和 C/C++等传统的编译性语言不同，Java 源代码的默认编译结果并非是可执行代码（本地机器指令），而是具有平台通用性的字节码，所以通用的字节码保证了其跨平台特性，但是程序最后的运行还是要和具体的操作系统打交道的，这就JVM（java虚拟机）帮我们做的事了。">
 <meta name="keywords" content="jvm">
 <meta property="og:type" content="article">
 <meta property="og:title" content="JVM的物理结构以及类的加载">
 <meta property="og:url" content="http://licho.club/2017/10/01/JVM的物理结构以及类的加载/index.html">
 <meta property="og:site_name" content="web小菜鸟的技术博客">
-<meta property="og:description" content="#JVM的物理结构以及类的加载 ##前言我们经常会听到java有“一次编译，到处运行”的跨平台的优点，其功劳主要归功于“字节码”。和虚拟机(JVM)和 C/C++等传统的编译性语言不同，Java 源代码的默认编译结果并非是可执行代码（本地机器指令），而是具有平台通用性的字节码，所以通用的字节码保证了其跨平台特性，但是程序最后的运行还是要和具体的操作系统打交道的，这就JVM（java虚拟机）帮我们做">
+<meta property="og:description" content="JVM的物理结构以及类的加载前言我们经常会听到java有“一次编译，到处运行”的跨平台的优点，其功劳主要归功于“字节码”。和虚拟机(JVM)和 C/C++等传统的编译性语言不同，Java 源代码的默认编译结果并非是可执行代码（本地机器指令），而是具有平台通用性的字节码，所以通用的字节码保证了其跨平台特性，但是程序最后的运行还是要和具体的操作系统打交道的，这就JVM（java虚拟机）帮我们做的事了。">
 <meta property="og:image" content="http://licho.club/img/1/java跨平台特性.png">
 <meta property="og:image" content="http://licho.club/img/1/clipboard.png">
 <meta property="og:image" content="http://licho.club/img/1/栈帧的组成结构.png">
 <meta property="og:image" content="http://licho.club/img/1/1495558077900.png">
 <meta property="og:image" content="http://licho.club/img/1/类加载图.gif">
 <meta property="og:image" content="http://licho.club/img/1/20140105195119234.jpg">
-<meta property="og:updated_time" content="2017-10-01T10:35:59.382Z">
+<meta property="og:updated_time" content="2017-10-01T11:30:37.650Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="JVM的物理结构以及类的加载">
-<meta name="twitter:description" content="#JVM的物理结构以及类的加载 ##前言我们经常会听到java有“一次编译，到处运行”的跨平台的优点，其功劳主要归功于“字节码”。和虚拟机(JVM)和 C/C++等传统的编译性语言不同，Java 源代码的默认编译结果并非是可执行代码（本地机器指令），而是具有平台通用性的字节码，所以通用的字节码保证了其跨平台特性，但是程序最后的运行还是要和具体的操作系统打交道的，这就JVM（java虚拟机）帮我们做">
+<meta name="twitter:description" content="JVM的物理结构以及类的加载前言我们经常会听到java有“一次编译，到处运行”的跨平台的优点，其功劳主要归功于“字节码”。和虚拟机(JVM)和 C/C++等传统的编译性语言不同，Java 源代码的默认编译结果并非是可执行代码（本地机器指令），而是具有平台通用性的字节码，所以通用的字节码保证了其跨平台特性，但是程序最后的运行还是要和具体的操作系统打交道的，这就JVM（java虚拟机）帮我们做的事了。">
 <meta name="twitter:image" content="http://licho.club/img/1/java跨平台特性.png">
 
 <link rel="apple-touch-icon" href= "/apple-touch-icon.png">
@@ -193,7 +193,7 @@
                 
                 <section class="switch-part switch-part2">
                     <div class="widget tagcloud" id="js-tagcloud">
-                        <ul class="tag-list"><li class="tag-list-item"><a class="tag-list-link" href="/tags/jvm/">jvm</a></li></ul>
+                        <ul class="tag-list"><li class="tag-list-item"><a class="tag-list-link" href="/tags/Java/">Java</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Maven/">Maven</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/jvm/">jvm</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/学习方法/">学习方法</a></li></ul>
                     </div>
                 </section>
                 
@@ -314,24 +314,21 @@
     <div class="article-entry" itemprop="articleBody">
       
           
-        <p>#JVM的物理结构以及类的加载</p>
-<p>##前言<br>我们经常会听到java有“一次编译，到处运行”的跨平台的优点，其功劳主要归功于“字节码”。和虚拟机(JVM)和 C/C++等传统的编译性语言不同，Java 源代码的默认编译结果并非是可执行代码（本地机器指令），而是具有平台通用性的字节码，所以通用的字节码保证了其跨平台特性，但是程序最后的运行还是要和具体的操作系统打交道的，这就JVM（java虚拟机）帮我们做的事了。JVM通过加载字节码文件将其解释为操作系统中的机器指令进行执行，所以字节码是跨平台的，但JVM不是跨平台的，不同的操作系统就要有不同的JVM来进行解释字节码文件。但是所谓的java跨平台是怎么回事呢？虽然JVM不是跨平台的，但是我们开发人员却不会因为操作系统地不同修改源码。自然而然，我们也看出来，java是以牺牲性能速度来获得跨平台特性的，毕竟先编译后解释运行的速度要远远慢于c.c++的直接编译。我们也可以根据下图来进行理解java的跨平台性：<br><img src="/img/1/java跨平台特性.png" alt=" center | Alt text"><br>所以java程序的运行一般分为两个过程:</p>
+        <h1 id="JVM的物理结构以及类的加载"><a href="#JVM的物理结构以及类的加载" class="headerlink" title="JVM的物理结构以及类的加载"></a>JVM的物理结构以及类的加载</h1><h1 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h1><p>我们经常会听到java有“一次编译，到处运行”的跨平台的优点，其功劳主要归功于“字节码”。和虚拟机(JVM)和 C/C++等传统的编译性语言不同，Java 源代码的默认编译结果并非是可执行代码（本地机器指令），而是具有平台通用性的字节码，所以通用的字节码保证了其跨平台特性，但是程序最后的运行还是要和具体的操作系统打交道的，这就JVM（java虚拟机）帮我们做的事了。JVM通过加载字节码文件将其解释为操作系统中的机器指令进行执行，所以字节码是跨平台的，但JVM不是跨平台的，不同的操作系统就要有不同的JVM来进行解释字节码文件。但是所谓的java跨平台是怎么回事呢？虽然JVM不是跨平台的，但是我们开发人员却不会因为操作系统地不同修改源码。自然而然，我们也看出来，java是以牺牲性能速度来获得跨平台特性的，毕竟先编译后解释运行的速度要远远慢于c.c++的直接编译。我们也可以根据下图来进行理解java的跨平台性：<br><img src="/img/1/java跨平台特性.png" alt=" center | Alt text"><br>所以java程序的运行一般分为两个过程:</p>
 <ul>
 <li><strong>编译</strong>：通过javac [/path/filename.java] | [-d . filename.java]来进行编译获得字节码文件</li>
-<li><strong>运行</strong>：通过java /path/filename来运行该字节码文件(包含main方法)<br>##JVM物理结构图及说明<br><img src="/img/1/clipboard.png" alt=" | right | Alt text"></li>
+<li><strong>运行</strong>：通过java /path/filename来运行该字节码文件(包含main方法)<h2 id="JVM物理结构图及说明"><a href="#JVM物理结构图及说明" class="headerlink" title="JVM物理结构图及说明"></a>JVM物理结构图及说明</h2><img src="/img/1/clipboard.png" alt=" | right | Alt text"></li>
 </ul>
 <p>JAVA的JVM的内存空间主要分为三个区：堆区(heap),栈(stack),和方法区(method)。这也是我们在学习java的过程中经常会听到的几个概念，特别是堆，和栈。</p>
-<p>###JAVA栈</p>
-<ol>
+<h3 id="JAVA栈"><a href="#JAVA栈" class="headerlink" title="JAVA栈"></a>JAVA栈</h3><ol>
 <li>JVM为每一个线程分配一个栈空间，栈中只包含某些基本类型变量或者某个类型的引用，线程中每个方法的调用称为一个栈帧。</li>
 <li>每个栈中的数据(原始类型和对象引用)都是私有的，其他栈不能访问。</li>
 <li>.栈分为3个部分：基本类型变量区、执行环境上下文、操作指令区(存放操作指令)。<br><img src="/img/1/栈帧的组成结构.png" alt="|center | Alt text"></li>
 </ol>
-<p>###JAVA堆</p>
-<ol>
+<h3 id="JAVA堆"><a href="#JAVA堆" class="headerlink" title="JAVA堆"></a>JAVA堆</h3><ol>
 <li>jvm只有一个堆区(heap),被所有线程共享，堆中不存放基本类型和对象引用，只存放对象本身。</li>
 <li>堆区中存放的都是对象，包括实例对象，也包括每个类的RTTI(Run-Time Type Identification,运行时类型信息)即Class对象。</li>
-<li>它是java内存管理的GC主要工作场所，检索长时间得不到使用的对象进行回收。<br>###JAVA方法区</li>
+<li>它是java内存管理的GC主要工作场所，检索长时间得不到使用的对象进行回收。<h3 id="JAVA方法区"><a href="#JAVA方法区" class="headerlink" title="JAVA方法区"></a>JAVA方法区</h3></li>
 <li>方法区（Method Area）与Java堆一样，是各个线程共享的内存区域，它用于存储已被虚拟机加载的类信息、常量、静态变量、即时编译器编译后的代码等数据。虽然Java虚拟机规范把方法区描述为堆的一个逻辑部分，但是它却有一个别名叫做Non-Heap（非堆），目的应该是与Java堆区分开来。</li>
 <li><strong>其主要可分为以下几部分(各个虚拟机的具体实现有些不同)：</strong></li>
 </ol>
@@ -339,9 +336,9 @@
 <li><strong>常量池</strong>：jvm为每个已加载的类都维护一个常量池。常量池就是这个类用到的常量的一个有序集合，包括实际的常量(string,integer, 和floating point常量)和对类型，域和方法的符号引用。池中的数据项象数组项一样，是通过索引访问的。因为常量池存储了一个类型所使用到的所有类型，域和方法的符号引用，所以它在java程序的动态链接中起了核心的作用。</li>
 <li><strong>域(Field)信息</strong>：jvm必须在方法区中保存类型的所有域的相关信息以及域的声明顺序，域的相关信息包括域名、域类型、域修饰符(public, private, protected,static,final，volatile, transient的某个子集)</li>
 <li><strong>方法(Method)信息</strong>：jvm必须保存所有方法的以下信息，同样域信息一样包括方法名，方法的返回类型(或 void)，方法参数的数量和类型(有序的)。方法的修饰符(public, private, protected, static, final, synchronized, native, abstract的一个子集)除了abstract和native方法外，其他方法还有保存方法的字节码(bytecodes)操作数栈和方法栈帧（堆栈以帧为单位保存线程的状态）的局部变量区的大小           </li>
-<li><strong>除了常量外的静态变量数据</strong>：类变量被类的所有实例共享，即使没有类实例时你也可以访问它。这些变量只与类相关，所以在方法区中，它们成为类数据在逻辑上的一部分。在jvm使用一个类之前，它必须在方法区中为每个non-final类变量分配空间。常量(被声明为final的类变量)的处理方法则不同，每个常量都会在常量池中有一个拷贝。non-final类变量被存储在声明它的类信息内，而final类被存储在所有使用它的类信息内。<br>##JVM的类加载机制<br><strong>类的加载流程图</strong><br><img src="/img/1/1495558077900.png" alt="Alt text"></li>
+<li><strong>除了常量外的静态变量数据</strong>：类变量被类的所有实例共享，即使没有类实例时你也可以访问它。这些变量只与类相关，所以在方法区中，它们成为类数据在逻辑上的一部分。在jvm使用一个类之前，它必须在方法区中为每个non-final类变量分配空间。常量(被声明为final的类变量)的处理方法则不同，每个常量都会在常量池中有一个拷贝。non-final类变量被存储在声明它的类信息内，而final类被存储在所有使用它的类信息内。<h2 id="JVM的类加载机制"><a href="#JVM的类加载机制" class="headerlink" title="JVM的类加载机制"></a>JVM的类加载机制</h2><strong>类的加载流程图</strong><br><img src="/img/1/1495558077900.png" alt="Alt text"></li>
 </ul>
-<p>####<strong>类的加载过程</strong><br>JVM把class文件加载到内存，并对数据进行校验、解析和初始化，最终形成JVM可以直接使用的java类型的全过程。JVM的类加载是通过ClassLoader及其子类来完成的，类的层次关系和加载顺序可以由下图来描述：<br><img src="/img/1/类加载图.gif" alt="Alt text"></p>
+<h4 id="类的加载过程"><a href="#类的加载过程" class="headerlink" title="类的加载过程"></a><strong>类的加载过程</strong></h4><p>JVM把class文件加载到内存，并对数据进行校验、解析和初始化，最终形成JVM可以直接使用的java类型的全过程。JVM的类加载是通过ClassLoader及其子类来完成的，类的层次关系和加载顺序可以由下图来描述：<br><img src="/img/1/类加载图.gif" alt="Alt text"></p>
 <ul>
 <li>简单来说，<em>类的加载阶段就是</em>类加载器（ClassLoader）<em>责根据一个类的全限定名来读取此类的二进制字节流到JVM内部，并存储在运行时内存区的中方法区，然后将其转换成一个与目标类型对应的java.lang.Class对象实例</em>（Java虚拟机规范并没有明确要求一定要存储在Java的堆区中，因此HotSpot VM选择将Class对象存储在方法区内），这个Class对象在日后会作为方法区中该类的各种数据的访问入口。</li>
 <li>那为什么需要多个不同的类加载器呢?首先是为了安全考虑，对原生API和扩展的API有不同对待，其分类如下:</li>
@@ -358,13 +355,13 @@
 </code></pre><ul>
 <li>通过一个类的全限定名来获取其定义的二进制字节流。</li>
 <li>将这个字节流所代表的静态存储结构转化为方法区的运行时数据结构。</li>
-<li>在Java堆中生成一个代表这个类的java.lang.Class对象，作为对方法区中这些数据的访问入口。<br>####<strong>类的链接过程</strong><br>#####<strong>验证阶段</strong>：<br>验证的目的是为了确保Class文件中的字节流包含的信息符合当前虚拟机的要求，而且不会危害虚拟机自身的安全。不同的虚拟机对类验证的实现可能会有所不同，但大致都会完成以下四个阶段的验证<em>：文件格式的验证、元数据的验证、字节码验证和符号引用验证。</em></li>
+<li>在Java堆中生成一个代表这个类的java.lang.Class对象，作为对方法区中这些数据的访问入口。<h4 id="类的链接过程"><a href="#类的链接过程" class="headerlink" title="类的链接过程"></a><strong>类的链接过程</strong></h4><h5 id="验证阶段："><a href="#验证阶段：" class="headerlink" title="验证阶段："></a><strong>验证阶段</strong>：</h5>验证的目的是为了确保Class文件中的字节流包含的信息符合当前虚拟机的要求，而且不会危害虚拟机自身的安全。不同的虚拟机对类验证的实现可能会有所不同，但大致都会完成以下四个阶段的验证<em>：文件格式的验证、元数据的验证、字节码验证和符号引用验证。</em></li>
 </ul>
 </li>
 <li><strong>文件格式的验证</strong>：验证字节流是否符合Class文件格式的规范，并且能被当前版本的虚拟机处理，该验证的主要目的是保证输入的字节流能正确地解析并存储于方法区之内。经过该阶段的验证后，字节流才会进入内存的方法区中进行存储，后面的三个验证都是基于方法区的存储结构进行的。</li>
 <li><strong>元数据验证</strong>：对类的元数据信息进行语义校验（其实就是对类中的各数据类型进行语法校验），保证不存在不符合Java语法规范的元数据信息。</li>
 <li><strong>字节码验证</strong>：该阶段验证的主要工作是进行数据流和控制流分析，对类的方法体进行校验分析，以保证被校验的类的方法在运行时不会做出危害虚拟机安全的行为。</li>
-<li><strong>符号引用验证</strong>：这是最后一个阶段的验证，它发生在虚拟机将符号引用转化为直接引用的时候（解析阶段中发生该转化，后面会有讲解），主要是对类自身以外的信息（常量池中的各种符号引用）进行匹配性的校验。<br>#####<strong>准备阶段</strong>：<br>准备阶段是正式为类变量分配内存并设置类变量初始值的阶段，这些内存都将在方法区中分配。对于该阶段有以下几点需要注意：<ol>
+<li><strong>符号引用验证</strong>：这是最后一个阶段的验证，它发生在虚拟机将符号引用转化为直接引用的时候（解析阶段中发生该转化，后面会有讲解），主要是对类自身以外的信息（常量池中的各种符号引用）进行匹配性的校验。<h5 id="准备阶段："><a href="#准备阶段：" class="headerlink" title="准备阶段："></a><strong>准备阶段</strong>：</h5>准备阶段是正式为类变量分配内存并设置类变量初始值的阶段，这些内存都将在方法区中分配。对于该阶段有以下几点需要注意：<ol>
 <li>这时候进行内存分配的仅包括类变量（static），而不包括实例变量，实例变量会在对象实例化时随着对象一块分配在Java堆中。</li>
 <li>这里所设置的初始值通常情况下是数据类型默认的零值（如0、0L、null、false等），而不是被在Java代码中被显式地赋予的值。例如类中定义了一个静态变量:</li>
 </ol>
@@ -372,7 +369,7 @@
 </ul>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">public static int value=3;</div></pre></td></tr></table></figure>
 <p>  在该阶段中会给value变量分配的空间，并设置初值0，并不会把值设置为3那么初始化为3发生在什么时候呢？在第三阶段的初始化过程中。 下表列出了Java中所有基本数据类型以及reference类型的默认零值：<br>  <img src="/img/1/20140105195119234.jpg" alt="@java中的默认零值 | center | Alt text"></p>
-<p>#####<strong>解析阶段</strong>：<br>   解析阶段是将常量池中的符号引用替换为直接引用的过程（前面已经提到了符号引用与直接引用的区别）。在进行解析之前需要对符号引用进行解析，不同虚拟机实现可以根据需要判断到底是在类被加载器加载的时候对常量池的符号引用进行解析（也就是初始化之前），还是等到一个符号引用被使用之前进行解析（也就是在初始化之后）。</p>
+<h5 id="解析阶段："><a href="#解析阶段：" class="headerlink" title="解析阶段："></a><strong>解析阶段</strong>：</h5><p>   解析阶段是将常量池中的符号引用替换为直接引用的过程（前面已经提到了符号引用与直接引用的区别）。在进行解析之前需要对符号引用进行解析，不同虚拟机实现可以根据需要判断到底是在类被加载器加载的时候对常量池的符号引用进行解析（也就是初始化之前），还是等到一个符号引用被使用之前进行解析（也就是在初始化之后）。</p>
 <p>到现在我们已经明白解析阶段的时机，那么还有一个问题是：如果一个符号引用进行多次解析请求，虚拟机中除了invokedynamic指令外，虚拟机可以对第一次解析的结果进行缓存（在运行时常量池中记录引用，并把常量标识为一解析状态），这样就避免了一个符号引用的多次解析。</p>
 <p>解析动作主要针对的是类或者接口、字段、类方法、方法类型、方法句柄和调用点限定符7类符号引用。这里主要说明前四种的解析过程。</p>
 <h5 id="类或者接口解析"><a href="#类或者接口解析" class="headerlink" title="类或者接口解析"></a>类或者接口解析</h5><p>要把一个类或者接口的符号引用解析为直接引用，需要以下三个步骤：</p>
@@ -417,7 +414,7 @@
         <p><span>本文标题:</span><a href="/2017/10/01/JVM的物理结构以及类的加载/">JVM的物理结构以及类的加载</a></p>
         <p><span>文章作者:</span><a href="/" title="回到主页">licho</a></p>
         <p><span>发布时间:</span>2017-10-01, 14:38:09</p>
-        <p><span>最后更新:</span>2017-10-01, 18:35:59</p>
+        <p><span>最后更新:</span>2017-10-01, 19:30:37</p>
         <p>
             <span>原始链接:</span><a class="post-url" href="/2017/10/01/JVM的物理结构以及类的加载/" title="JVM的物理结构以及类的加载">http://licho.club/2017/10/01/JVM的物理结构以及类的加载/</a>
             <span class="copy-path" data-clipboard-text="原文: http://licho.club/2017/10/01/JVM的物理结构以及类的加载/　　作者: licho" title="点击复制文章链接"><i class="fa fa-clipboard"></i></span>
@@ -432,12 +429,12 @@
 
     <nav id="article-nav">
         
-        
-            <div id="article-nav-older" class="article-nav-title">
-                <a href="/2017/09/30/hello-world/">
-                    Hello World
+            <div id="article-nav-newer" class="article-nav-title">
+                <a href="/2017/10/01/My-Learning-Way/">
+                    转一位大佬的学习、归纳方法（以学习 Maven 为例）
                 </a>
             </div>
+        
         
     </nav>
 
@@ -447,7 +444,7 @@
     <div id="toc" class="toc-article">
         <strong class="toc-title">文章目录</strong>
         
-            <ol class="toc"><li class="toc-item toc-level-5"><a class="toc-link" href="#类或者接口解析"><span class="toc-number">1.</span> <span class="toc-text">类或者接口解析</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#字段解析"><span class="toc-number">2.</span> <span class="toc-text">字段解析</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#类方法解析"><span class="toc-number">3.</span> <span class="toc-text">类方法解析</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#接口方法解析"><span class="toc-number">4.</span> <span class="toc-text">接口方法解析</span></a></li></ol></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#初始化"><span class="toc-number"></span> <span class="toc-text">初始化</span></a>
+            <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#JVM的物理结构以及类的加载"><span class="toc-number">1.</span> <span class="toc-text">JVM的物理结构以及类的加载</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#前言"><span class="toc-number">2.</span> <span class="toc-text">前言</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#JVM物理结构图及说明"><span class="toc-number">2.1.</span> <span class="toc-text">JVM物理结构图及说明</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#JAVA栈"><span class="toc-number">2.1.1.</span> <span class="toc-text">JAVA栈</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#JAVA堆"><span class="toc-number">2.1.2.</span> <span class="toc-text">JAVA堆</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#JAVA方法区"><span class="toc-number">2.1.3.</span> <span class="toc-text">JAVA方法区</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#JVM的类加载机制"><span class="toc-number">2.2.</span> <span class="toc-text">JVM的类加载机制</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#类的加载过程"><span class="toc-number">2.2.0.1.</span> <span class="toc-text">类的加载过程</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#类的链接过程"><span class="toc-number">2.2.0.2.</span> <span class="toc-text">类的链接过程</span></a><ol class="toc-child"><li class="toc-item toc-level-5"><a class="toc-link" href="#验证阶段："><span class="toc-number">2.2.0.2.1.</span> <span class="toc-text">验证阶段：</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#准备阶段："><span class="toc-number">2.2.0.2.2.</span> <span class="toc-text">准备阶段：</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#解析阶段："><span class="toc-number">2.2.0.2.3.</span> <span class="toc-text">解析阶段：</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#类或者接口解析"><span class="toc-number">2.2.0.2.4.</span> <span class="toc-text">类或者接口解析</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#字段解析"><span class="toc-number">2.2.0.2.5.</span> <span class="toc-text">字段解析</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#类方法解析"><span class="toc-number">2.2.0.2.6.</span> <span class="toc-text">类方法解析</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#接口方法解析"><span class="toc-number">2.2.0.2.7.</span> <span class="toc-text">接口方法解析</span></a></li></ol></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#初始化"><span class="toc-number">2.2.1.</span> <span class="toc-text">初始化</span></a></li></ol></li></ol></li></ol>
         
     </div>
     <style>
@@ -517,19 +514,19 @@
 
     <div class="scroll" id="post-nav-button">
         
-            <a href="/" title="回到主页"><i class="fa fa-home"></i></a>
+            <a href="/2017/10/01/My-Learning-Way/" title="上一篇: 转一位大佬的学习、归纳方法（以学习 Maven 为例）">
+                <i class="fa fa-angle-left"></i>
+            </a>
         
 
         <a title="文章列表"><i class="fa fa-bars"></i><i class="fa fa-times"></i></a>
 
         
-            <a href="/2017/09/30/hello-world/" title="下一篇: Hello World">
-                <i class="fa fa-angle-right"></i>
-            </a>
+            <a href="/" title="回到主页"><i class="fa fa-home"></i></a>
         
     </div>
 
-    <ul class="post-list"><li class="post-list-item"><a class="post-list-link" href="/2017/10/01/JVM的物理结构以及类的加载/">JVM的物理结构以及类的加载</a></li><li class="post-list-item"><a class="post-list-link" href="/2017/09/30/hello-world/">Hello World</a></li></ul>
+    <ul class="post-list"><li class="post-list-item"><a class="post-list-link" href="/2017/10/01/My-Learning-Way/">转一位大佬的学习、归纳方法（以学习 Maven 为例）</a></li><li class="post-list-item"><a class="post-list-link" href="/2017/10/01/JVM的物理结构以及类的加载/">JVM的物理结构以及类的加载</a></li></ul>
 
 
 
@@ -601,23 +598,6 @@
 </div>
 <script>
     // Open in New Window
-    
-        var oOpenInNew = {
-            
-            
-            
-            
-            
-            
-             archives: ".archive-article-title", 
-             miniArchives: "a.post-list-link", 
-            
-             friends: "#js-friends a", 
-            
-        }
-        for (var x in oOpenInNew) {
-            $(oOpenInNew[x]).attr("target", "_blank");
-        }
     
 </script>
 
