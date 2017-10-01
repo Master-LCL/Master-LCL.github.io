@@ -15,23 +15,24 @@
 
 
 
-<meta name="description" content="title:JVM的物理结构以及类的加载#JVM的物理结构以及类的加载@(Java)[JVM, 类的加载, java] ##前言我们经常会听到java有“一次编译，到处运行”的跨平台的优点，其功劳主要归功于“字节码”。和虚拟机(JVM)和 C/C++等传统的编译性语言不同，Java 源代码的默认编译结果并非是可执行代码（本地机器指令），而是具有平台通用性的字节码，所以通用的字节码保证了其跨平台特">
+<meta name="description" content="#JVM的物理结构以及类的加载 ##前言我们经常会听到java有“一次编译，到处运行”的跨平台的优点，其功劳主要归功于“字节码”。和虚拟机(JVM)和 C/C++等传统的编译性语言不同，Java 源代码的默认编译结果并非是可执行代码（本地机器指令），而是具有平台通用性的字节码，所以通用的字节码保证了其跨平台特性，但是程序最后的运行还是要和具体的操作系统打交道的，这就JVM（java虚拟机）帮我们做">
+<meta name="keywords" content="jvm">
 <meta property="og:type" content="article">
-<meta property="og:title" content="web小菜鸟的技术博客">
+<meta property="og:title" content="JVM的物理结构以及类的加载">
 <meta property="og:url" content="http://licho.club/2017/10/01/JVM的物理结构以及类的加载/index.html">
 <meta property="og:site_name" content="web小菜鸟的技术博客">
-<meta property="og:description" content="title:JVM的物理结构以及类的加载#JVM的物理结构以及类的加载@(Java)[JVM, 类的加载, java] ##前言我们经常会听到java有“一次编译，到处运行”的跨平台的优点，其功劳主要归功于“字节码”。和虚拟机(JVM)和 C/C++等传统的编译性语言不同，Java 源代码的默认编译结果并非是可执行代码（本地机器指令），而是具有平台通用性的字节码，所以通用的字节码保证了其跨平台特">
-<meta property="og:image" content="http://licho.club/2017/10/01/JVM的物理结构以及类的加载/java跨平台特性.png">
-<meta property="og:image" content="http://licho.club/2017/10/01/JVM的物理结构以及类的加载/clipboard.png">
-<meta property="og:image" content="http://licho.club/2017/10/01/JVM的物理结构以及类的加载/栈帧的组成结构.png">
-<meta property="og:image" content="http://licho.club/2017/10/01/JVM的物理结构以及类的加载/1495558077900.png">
-<meta property="og:image" content="http://licho.club/2017/10/01/JVM的物理结构以及类的加载/类加载图.gif">
-<meta property="og:image" content="http://licho.club/2017/10/01/JVM的物理结构以及类的加载/20140105195119234.jpg">
-<meta property="og:updated_time" content="2017-10-01T06:38:42.173Z">
+<meta property="og:description" content="#JVM的物理结构以及类的加载 ##前言我们经常会听到java有“一次编译，到处运行”的跨平台的优点，其功劳主要归功于“字节码”。和虚拟机(JVM)和 C/C++等传统的编译性语言不同，Java 源代码的默认编译结果并非是可执行代码（本地机器指令），而是具有平台通用性的字节码，所以通用的字节码保证了其跨平台特性，但是程序最后的运行还是要和具体的操作系统打交道的，这就JVM（java虚拟机）帮我们做">
+<meta property="og:image" content="http://licho.club/img/1/java跨平台特性.png">
+<meta property="og:image" content="http://licho.club/img/1/clipboard.png">
+<meta property="og:image" content="http://licho.club/img/1/栈帧的组成结构.png">
+<meta property="og:image" content="http://licho.club/img/1/1495558077900.png">
+<meta property="og:image" content="http://licho.club/img/1/类加载图.gif">
+<meta property="og:image" content="http://licho.club/img/1/20140105195119234.jpg">
+<meta property="og:updated_time" content="2017-10-01T10:35:59.382Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="web小菜鸟的技术博客">
-<meta name="twitter:description" content="title:JVM的物理结构以及类的加载#JVM的物理结构以及类的加载@(Java)[JVM, 类的加载, java] ##前言我们经常会听到java有“一次编译，到处运行”的跨平台的优点，其功劳主要归功于“字节码”。和虚拟机(JVM)和 C/C++等传统的编译性语言不同，Java 源代码的默认编译结果并非是可执行代码（本地机器指令），而是具有平台通用性的字节码，所以通用的字节码保证了其跨平台特">
-<meta name="twitter:image" content="http://licho.club/2017/10/01/JVM的物理结构以及类的加载/java跨平台特性.png">
+<meta name="twitter:title" content="JVM的物理结构以及类的加载">
+<meta name="twitter:description" content="#JVM的物理结构以及类的加载 ##前言我们经常会听到java有“一次编译，到处运行”的跨平台的优点，其功劳主要归功于“字节码”。和虚拟机(JVM)和 C/C++等传统的编译性语言不同，Java 源代码的默认编译结果并非是可执行代码（本地机器指令），而是具有平台通用性的字节码，所以通用的字节码保证了其跨平台特性，但是程序最后的运行还是要和具体的操作系统打交道的，这就JVM（java虚拟机）帮我们做">
+<meta name="twitter:image" content="http://licho.club/img/1/java跨平台特性.png">
 
 <link rel="apple-touch-icon" href= "/apple-touch-icon.png">
 
@@ -63,7 +64,7 @@
 <link href="//cdn.bootcss.com/font-awesome/4.6.3/css/font-awesome.min.css" rel="stylesheet">
 
 
-<title>web小菜鸟的技术博客</title>
+<title>JVM的物理结构以及类的加载 | web小菜鸟的技术博客</title>
 
 <script src="//cdn.bootcss.com/jquery/2.2.4/jquery.min.js"></script>
 <script src="//cdn.bootcss.com/clipboard.js/1.5.10/clipboard.min.js"></script>
@@ -84,7 +85,9 @@
 </script>
 
 
-    <script> yiliaConfig.jquery_ui = [false]; </script>
+    <script>
+        yiliaConfig.jquery_ui = [true, "//cdn.bootcss.com/jqueryui/1.10.4/jquery-ui.min.js", "//cdn.bootcss.com/jqueryui/1.10.4/css/jquery-ui.min.css"];
+    </script>
 
 
 
@@ -190,7 +193,7 @@
                 
                 <section class="switch-part switch-part2">
                     <div class="widget tagcloud" id="js-tagcloud">
-                        
+                        <ul class="tag-list"><li class="tag-list-item"><a class="tag-list-link" href="/tags/jvm/">jvm</a></li></ul>
                     </div>
                 </section>
                 
@@ -282,22 +285,47 @@
       <input type="hidden" class="isFancy" />
     
     
+      <header class="article-header">
+        
+  
+    <h1 class="article-title" itemprop="name">
+      JVM的物理结构以及类的加载
+    </h1>
+  
+
+      </header>
+      
+      <div class="article-info article-info-post">
+        
+    <div class="article-category tagcloud">
+    <a class="article-category-link" href="/categories/java/">java</a>
+    </div>
+
+
+        
+    <div class="article-tag tagcloud">
+        <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/jvm/">jvm</a></li></ul>
+    </div>
+
+        <div class="clearfix"></div>
+      </div>
+      
+    
     <div class="article-entry" itemprop="articleBody">
       
           
-        <hr>
-<h2 id="title-JVM的物理结构以及类的加载"><a href="#title-JVM的物理结构以及类的加载" class="headerlink" title="title:JVM的物理结构以及类的加载"></a>title:JVM的物理结构以及类的加载</h2><p>#JVM的物理结构以及类的加载<br>@(Java)[JVM, 类的加载, java]</p>
-<p>##前言<br>我们经常会听到java有“一次编译，到处运行”的跨平台的优点，其功劳主要归功于“字节码”。和虚拟机(JVM)和 C/C++等传统的编译性语言不同，Java 源代码的默认编译结果并非是可执行代码（本地机器指令），而是具有平台通用性的字节码，所以通用的字节码保证了其跨平台特性，但是程序最后的运行还是要和具体的操作系统打交道的，这就JVM（java虚拟机）帮我们做的事了。JVM通过加载字节码文件将其解释为操作系统中的机器指令进行执行，所以字节码是跨平台的，但JVM不是跨平台的，不同的操作系统就要有不同的JVM来进行解释字节码文件。但是所谓的java跨平台是怎么回事呢？虽然JVM不是跨平台的，但是我们开发人员却不会因为操作系统地不同修改源码。自然而然，我们也看出来，java是以牺牲性能速度来获得跨平台特性的，毕竟先编译后解释运行的速度要远远慢于c.c++的直接编译。我们也可以根据下图来进行理解java的跨平台性：<br><img src="./java跨平台特性.png" alt=" center | Alt text"><br>所以java程序的运行一般分为两个过程:</p>
+        <p>#JVM的物理结构以及类的加载</p>
+<p>##前言<br>我们经常会听到java有“一次编译，到处运行”的跨平台的优点，其功劳主要归功于“字节码”。和虚拟机(JVM)和 C/C++等传统的编译性语言不同，Java 源代码的默认编译结果并非是可执行代码（本地机器指令），而是具有平台通用性的字节码，所以通用的字节码保证了其跨平台特性，但是程序最后的运行还是要和具体的操作系统打交道的，这就JVM（java虚拟机）帮我们做的事了。JVM通过加载字节码文件将其解释为操作系统中的机器指令进行执行，所以字节码是跨平台的，但JVM不是跨平台的，不同的操作系统就要有不同的JVM来进行解释字节码文件。但是所谓的java跨平台是怎么回事呢？虽然JVM不是跨平台的，但是我们开发人员却不会因为操作系统地不同修改源码。自然而然，我们也看出来，java是以牺牲性能速度来获得跨平台特性的，毕竟先编译后解释运行的速度要远远慢于c.c++的直接编译。我们也可以根据下图来进行理解java的跨平台性：<br><img src="/img/1/java跨平台特性.png" alt=" center | Alt text"><br>所以java程序的运行一般分为两个过程:</p>
 <ul>
 <li><strong>编译</strong>：通过javac [/path/filename.java] | [-d . filename.java]来进行编译获得字节码文件</li>
-<li><strong>运行</strong>：通过java /path/filename来运行该字节码文件(包含main方法)<br>##JVM物理结构图及说明<br><img src="./clipboard.png" alt=" | right | Alt text"></li>
+<li><strong>运行</strong>：通过java /path/filename来运行该字节码文件(包含main方法)<br>##JVM物理结构图及说明<br><img src="/img/1/clipboard.png" alt=" | right | Alt text"></li>
 </ul>
 <p>JAVA的JVM的内存空间主要分为三个区：堆区(heap),栈(stack),和方法区(method)。这也是我们在学习java的过程中经常会听到的几个概念，特别是堆，和栈。</p>
 <p>###JAVA栈</p>
 <ol>
 <li>JVM为每一个线程分配一个栈空间，栈中只包含某些基本类型变量或者某个类型的引用，线程中每个方法的调用称为一个栈帧。</li>
 <li>每个栈中的数据(原始类型和对象引用)都是私有的，其他栈不能访问。</li>
-<li>.栈分为3个部分：基本类型变量区、执行环境上下文、操作指令区(存放操作指令)。<br><img src="./栈帧的组成结构.png" alt="|center | Alt text"></li>
+<li>.栈分为3个部分：基本类型变量区、执行环境上下文、操作指令区(存放操作指令)。<br><img src="/img/1/栈帧的组成结构.png" alt="|center | Alt text"></li>
 </ol>
 <p>###JAVA堆</p>
 <ol>
@@ -311,9 +339,9 @@
 <li><strong>常量池</strong>：jvm为每个已加载的类都维护一个常量池。常量池就是这个类用到的常量的一个有序集合，包括实际的常量(string,integer, 和floating point常量)和对类型，域和方法的符号引用。池中的数据项象数组项一样，是通过索引访问的。因为常量池存储了一个类型所使用到的所有类型，域和方法的符号引用，所以它在java程序的动态链接中起了核心的作用。</li>
 <li><strong>域(Field)信息</strong>：jvm必须在方法区中保存类型的所有域的相关信息以及域的声明顺序，域的相关信息包括域名、域类型、域修饰符(public, private, protected,static,final，volatile, transient的某个子集)</li>
 <li><strong>方法(Method)信息</strong>：jvm必须保存所有方法的以下信息，同样域信息一样包括方法名，方法的返回类型(或 void)，方法参数的数量和类型(有序的)。方法的修饰符(public, private, protected, static, final, synchronized, native, abstract的一个子集)除了abstract和native方法外，其他方法还有保存方法的字节码(bytecodes)操作数栈和方法栈帧（堆栈以帧为单位保存线程的状态）的局部变量区的大小           </li>
-<li><strong>除了常量外的静态变量数据</strong>：类变量被类的所有实例共享，即使没有类实例时你也可以访问它。这些变量只与类相关，所以在方法区中，它们成为类数据在逻辑上的一部分。在jvm使用一个类之前，它必须在方法区中为每个non-final类变量分配空间。常量(被声明为final的类变量)的处理方法则不同，每个常量都会在常量池中有一个拷贝。non-final类变量被存储在声明它的类信息内，而final类被存储在所有使用它的类信息内。<br>##JVM的类加载机制<br><strong>类的加载流程图</strong><br><img src="./1495558077900.png" alt="Alt text"></li>
+<li><strong>除了常量外的静态变量数据</strong>：类变量被类的所有实例共享，即使没有类实例时你也可以访问它。这些变量只与类相关，所以在方法区中，它们成为类数据在逻辑上的一部分。在jvm使用一个类之前，它必须在方法区中为每个non-final类变量分配空间。常量(被声明为final的类变量)的处理方法则不同，每个常量都会在常量池中有一个拷贝。non-final类变量被存储在声明它的类信息内，而final类被存储在所有使用它的类信息内。<br>##JVM的类加载机制<br><strong>类的加载流程图</strong><br><img src="/img/1/1495558077900.png" alt="Alt text"></li>
 </ul>
-<p>####<strong>类的加载过程</strong><br>JVM把class文件加载到内存，并对数据进行校验、解析和初始化，最终形成JVM可以直接使用的java类型的全过程。JVM的类加载是通过ClassLoader及其子类来完成的，类的层次关系和加载顺序可以由下图来描述：<br><img src="./类加载图.gif" alt="Alt text"></p>
+<p>####<strong>类的加载过程</strong><br>JVM把class文件加载到内存，并对数据进行校验、解析和初始化，最终形成JVM可以直接使用的java类型的全过程。JVM的类加载是通过ClassLoader及其子类来完成的，类的层次关系和加载顺序可以由下图来描述：<br><img src="/img/1/类加载图.gif" alt="Alt text"></p>
 <ul>
 <li>简单来说，<em>类的加载阶段就是</em>类加载器（ClassLoader）<em>责根据一个类的全限定名来读取此类的二进制字节流到JVM内部，并存储在运行时内存区的中方法区，然后将其转换成一个与目标类型对应的java.lang.Class对象实例</em>（Java虚拟机规范并没有明确要求一定要存储在Java的堆区中，因此HotSpot VM选择将Class对象存储在方法区内），这个Class对象在日后会作为方法区中该类的各种数据的访问入口。</li>
 <li>那为什么需要多个不同的类加载器呢?首先是为了安全考虑，对原生API和扩展的API有不同对待，其分类如下:</li>
@@ -343,7 +371,7 @@
 </li>
 </ul>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">public static int value=3;</div></pre></td></tr></table></figure>
-<p>  在该阶段中会给value变量分配的空间，并设置初值0，并不会把值设置为3那么初始化为3发生在什么时候呢？在第三阶段的初始化过程中。 下表列出了Java中所有基本数据类型以及reference类型的默认零值：<br>  <img src="./20140105195119234.jpg" alt="@java中的默认零值 | center | Alt text"></p>
+<p>  在该阶段中会给value变量分配的空间，并设置初值0，并不会把值设置为3那么初始化为3发生在什么时候呢？在第三阶段的初始化过程中。 下表列出了Java中所有基本数据类型以及reference类型的默认零值：<br>  <img src="/img/1/20140105195119234.jpg" alt="@java中的默认零值 | center | Alt text"></p>
 <p>#####<strong>解析阶段</strong>：<br>   解析阶段是将常量池中的符号引用替换为直接引用的过程（前面已经提到了符号引用与直接引用的区别）。在进行解析之前需要对符号引用进行解析，不同虚拟机实现可以根据需要判断到底是在类被加载器加载的时候对常量池的符号引用进行解析（也就是初始化之前），还是等到一个符号引用被使用之前进行解析（也就是在初始化之后）。</p>
 <p>到现在我们已经明白解析阶段的时机，那么还有一个问题是：如果一个符号引用进行多次解析请求，虚拟机中除了invokedynamic指令外，虚拟机可以对第一次解析的结果进行缓存（在运行时常量池中记录引用，并把常量标识为一解析状态），这样就避免了一个符号引用的多次解析。</p>
 <p>解析动作主要针对的是类或者接口、字段、类方法、方法类型、方法句柄和调用点限定符7类符号引用。这里主要说明前四种的解析过程。</p>
@@ -386,12 +414,12 @@
   
     
     <div class="copyright">
-        <p><span>本文标题:</span><a href="/2017/10/01/JVM的物理结构以及类的加载/"></a></p>
+        <p><span>本文标题:</span><a href="/2017/10/01/JVM的物理结构以及类的加载/">JVM的物理结构以及类的加载</a></p>
         <p><span>文章作者:</span><a href="/" title="回到主页">licho</a></p>
         <p><span>发布时间:</span>2017-10-01, 14:38:09</p>
-        <p><span>最后更新:</span>2017-10-01, 14:38:42</p>
+        <p><span>最后更新:</span>2017-10-01, 18:35:59</p>
         <p>
-            <span>原始链接:</span><a class="post-url" href="/2017/10/01/JVM的物理结构以及类的加载/" title="">http://licho.club/2017/10/01/JVM的物理结构以及类的加载/</a>
+            <span>原始链接:</span><a class="post-url" href="/2017/10/01/JVM的物理结构以及类的加载/" title="JVM的物理结构以及类的加载">http://licho.club/2017/10/01/JVM的物理结构以及类的加载/</a>
             <span class="copy-path" data-clipboard-text="原文: http://licho.club/2017/10/01/JVM的物理结构以及类的加载/　　作者: licho" title="点击复制文章链接"><i class="fa fa-clipboard"></i></span>
             <script> var clipboard = new Clipboard('.copy-path'); </script>
         </p>
@@ -419,7 +447,7 @@
     <div id="toc" class="toc-article">
         <strong class="toc-title">文章目录</strong>
         
-            <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#title-JVM的物理结构以及类的加载"><span class="toc-number">1.</span> <span class="toc-text">title:JVM的物理结构以及类的加载</span></a><ol class="toc-child"><li class="toc-item toc-level-5"><a class="toc-link" href="#类或者接口解析"><span class="toc-number">1.0.0.1.</span> <span class="toc-text">类或者接口解析</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#字段解析"><span class="toc-number">1.0.0.2.</span> <span class="toc-text">字段解析</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#类方法解析"><span class="toc-number">1.0.0.3.</span> <span class="toc-text">类方法解析</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#接口方法解析"><span class="toc-number">1.0.0.4.</span> <span class="toc-text">接口方法解析</span></a></li></ol></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#初始化"><span class="toc-number">1.1.</span> <span class="toc-text">初始化</span></a></li></ol></li></ol>
+            <ol class="toc"><li class="toc-item toc-level-5"><a class="toc-link" href="#类或者接口解析"><span class="toc-number">1.</span> <span class="toc-text">类或者接口解析</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#字段解析"><span class="toc-number">2.</span> <span class="toc-text">字段解析</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#类方法解析"><span class="toc-number">3.</span> <span class="toc-text">类方法解析</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#接口方法解析"><span class="toc-number">4.</span> <span class="toc-text">接口方法解析</span></a></li></ol></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#初始化"><span class="toc-number"></span> <span class="toc-text">初始化</span></a>
         
     </div>
     <style>
@@ -455,7 +483,7 @@
         </div>
         <script>
             window._bd_share_config={
-                "common":{"bdSnsKey":{},"bdText":"　| web小菜鸟的技术博客　","bdMini":"2","bdMiniList":false,"bdPic":"","bdStyle":"0","bdSize":"24"},"share":{}};with(document)0[(getElementsByTagName('head')[0]||body).appendChild(createElement('script')).src='http://bdimg.share.baidu.com/static/api/js/share.js?v=89860593.js?cdnversion='+~(-new Date()/36e5)];
+                "common":{"bdSnsKey":{},"bdText":"JVM的物理结构以及类的加载　| web小菜鸟的技术博客　","bdMini":"2","bdMiniList":false,"bdPic":"","bdStyle":"0","bdSize":"24"},"share":{}};with(document)0[(getElementsByTagName('head')[0]||body).appendChild(createElement('script')).src='http://bdimg.share.baidu.com/static/api/js/share.js?v=89860593.js?cdnversion='+~(-new Date()/36e5)];
         </script>
     
 
@@ -468,6 +496,20 @@
 
 
 
+    
+        <section class="youyan" id="comments">
+    <script>
+        var loadComment = function(){
+            var d = document, s = d.createElement('script');
+            s.src = 'http://v2.uyan.cc/code/uyan.js?uid=2145749';
+            (d.head || d.body).appendChild(s);
+        }
+    </script>
+    
+    <script> loadComment(); </script>
+
+    <div id="uyan_frame"></div>
+</section>
     
 
 
@@ -571,7 +613,7 @@
              miniArchives: "a.post-list-link", 
             
              friends: "#js-friends a", 
-             socail: ".social a" 
+            
         }
         for (var x in oOpenInNew) {
             $(oOpenInNew[x]).attr("target", "_blank");
